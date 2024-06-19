@@ -54,7 +54,7 @@ def overlay_and_train(input_images_folder, input_overlay_dir, number_of_images_t
     return model, training_results, real_data_val_results, real_data_test_results
 
 
-def synthetic_trainings(scenarios_to_train, parent_folder="./", real_data_yaml_file=None):
+def synthetic_trainings(scenarios_to_train, data_frame_folder="./", results_folder="./", real_data_yaml_file=None):
     filest_timestamp = datetime.now().strftime("_%Y%m%d_%H%M%S")
 
     results_by_train = pd.DataFrame(
@@ -74,11 +74,11 @@ def synthetic_trainings(scenarios_to_train, parent_folder="./", real_data_yaml_f
         epochs = mtr['epochs']
         imgsz = mtr['imgsz']
 
-        output_overlayed_images_dir = os.path.join(parent_folder, m, "overlayed_images")
-        output_overlayed_labels_dir = os.path.join(parent_folder, m, "overlayed_labels")
-        output_training_dir = os.path.join(parent_folder, m, "training")
+        output_overlayed_images_dir = os.path.join(data_frame_folder, m, "overlayed_images")
+        output_overlayed_labels_dir = os.path.join(data_frame_folder, m, "overlayed_labels")
+        output_training_dir = os.path.join(data_frame_folder, m, "training")
 
-        os.makedirs(os.path.join(parent_folder, m), exist_ok=True)
+        os.makedirs(os.path.join(results_folder, m), exist_ok=True)
         os.makedirs(output_overlayed_images_dir, exist_ok=True)
         os.makedirs(output_overlayed_labels_dir, exist_ok=True)
         os.makedirs(output_training_dir, exist_ok=True)
@@ -140,7 +140,7 @@ def synthetic_trainings(scenarios_to_train, parent_folder="./", real_data_yaml_f
 
         conf_threshold = 0.30
 
-        functions_annotations.compare_annotated_images_and_predictions(real_data_yaml_file, 'val', model, os.path.join(parent_folder,m,"error_analysis"),
+        functions_annotations.compare_annotated_images_and_predictions(real_data_yaml_file, 'val', model, os.path.join(results_folder, m, "error_analysis"),
                                                                        prediction_conf_threshold=conf_threshold)
 
         fin = datetime.now()
@@ -149,7 +149,7 @@ def synthetic_trainings(scenarios_to_train, parent_folder="./", real_data_yaml_f
         results_by_train.loc[len(results_by_train.index)] = [m, save_dir, train_features_number, val_features_number,
                    inicio, fin, duracion, precision, recall, map50, map50_95, cm, rdv_precision, rdv_recall, rdv_map50, rdv_map50_95, rdv_cm, rdt_precision, rdt_recall, rdt_map50, rdt_map50_95, rdt_cm]
 
-        results_by_train.to_csv(os.path.join(parent_folder,"results_by_train.csv"))
+        results_by_train.to_csv(os.path.join(results_folder, "results_by_train.csv"))
 
     return results_by_train
 
